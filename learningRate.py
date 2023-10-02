@@ -1,19 +1,21 @@
-from memory_profiler import profile
+
 import numpy as np
 import matplotlib.pyplot as plt
-
+import numdifftools as nd
 # Генерируем синтетические данные для линейной регрессии
 np.random.seed(0)
-X = 2 * np.random.rand(100, 1)
-y = 2.6 * X + 3.9 + np.random.randn(100, 1)  # Измененное уравнение
+
+X = 5 * np.random.rand(100, 1)
+y = 3 * X + 0.5 + np.random.randn(100, 1)  # Измененное уравнение
+y2 = 3 * X + 0.5
 
 
 def mean_squared_error(y_true, y_pred):
     return np.mean((y_true - y_pred) ** 2)
 
-
+mod = 20
 def stepped_lr(epoch, lr):
-    if epoch % 20 == 0:
+    if epoch % mod == 0:
         lr *= 0.9
     return lr
 
@@ -26,7 +28,7 @@ def stochastic_gradient_descent(X, y, learning_rate=0.01, n_epochs=100, batch_si
     velocity = np.zeros((1, 1))
     theta_history = []
 
-    for epoch in range(100):
+    for epoch in range(n_epochs):
         indices = np.random.permutation(n_samples)
         for start in range(0, n_samples, batch_size):
             end = min(start + batch_size, n_samples)
@@ -43,21 +45,21 @@ def stochastic_gradient_descent(X, y, learning_rate=0.01, n_epochs=100, batch_si
         y_pred = X.dot(theta)
         mse = mean_squared_error(y, y_pred)
         print(f'Epoch {epoch + 1}/{n_epochs}, MSE: {mse:.4f}')
-
         theta_history.append(theta.copy())
         if np.linalg.norm(gradient) < eps:
             break
 
     return theta, theta_history
 
-
-final_theta, theta_history = stochastic_gradient_descent(X, y, learning_rate=0.1, n_epochs=100, batch_size=10)
-
+batch = 20
+final_theta, theta_history = stochastic_gradient_descent(X, y, learning_rate=0.1, n_epochs=100, batch_size=batch)
 
 plt.scatter(X, y, label='Data Points')  # Точки данных
 plt.plot(X, X.dot(final_theta), color='red', label='Linear Regression')  # Линейная регрессия
+plt.plot(X, y2, color = 'black', label = 'target')
 plt.xlabel('X')
 plt.ylabel('y')
-plt.title('Linear Regression with Stochastic Gradient Descent')
+plt.title('Linear Regression with Stochastic Gradient Descent, sch.' + ' batch: ' + str(batch))
 plt.legend()
+
 plt.show()

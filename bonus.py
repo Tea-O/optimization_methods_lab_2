@@ -28,7 +28,7 @@ def SGD_with_adam(X, y, deg, alpha, beta, ll, learning_rate=0.01, n_epochs=1000,
                                 * (X[i] ** j))
         gradient *= 2 / n_samples
 
-        gradient += L1(ll, w) / n_samples
+        gradient += L2(ll, w) / n_samples
         return gradient
 
     for epoch in range(1, n_epochs + 1):
@@ -47,24 +47,30 @@ def SGD_with_adam(X, y, deg, alpha, beta, ll, learning_rate=0.01, n_epochs=1000,
             break
     return theta, theta_history
 
-
+coefA = 2
+coefB = -9
+coefC = 3
+coefD = 6
+coefE = 10
 def reg(x):
-    return 11.7 * x ** 4 - 4.1 * x ** 3 - 6.2 * x ** 2 + 3.25 * x - 5
+    return coefA * x ** 4 + coefB * x ** 3 + coefC * x ** 2 + coefD * x + coefE
 
 
 def generate_points(f, num, max_x=2, disp=0):
     X = np.random.uniform(low=-max_x, high=max_x, size=num)
     X.sort()
     Y = f(X)
+    max_y = 4000
     for i in range(len(Y)):
-        Y[i] = Y[i] + np.random.uniform(-5, 5)
+        Y[i] = Y[i] + np.random.uniform(-max_y, max_y)
     return X, Y
 
 
 
 # Generate 10 random data points
-num_points = 10
-X, Y = generate_points(reg, num_points, max_x=1)
+num_points = 50
+maxX = 10
+X, Y = generate_points(reg, num_points, max_x= maxX)
 
 # Perform linear regression using SGD with Adam
 deg = 5  # Degree of the regression polynomial (linear regression)
@@ -77,7 +83,7 @@ eps = 1e-3
 theta, theta_history = SGD_with_adam(X[:, np.newaxis], Y, deg, alpha, beta,0.2, learning_rate, n_epochs, batch_size, eps)
 
 # Create a range of X values for plotting the regression line
-X_range = np.linspace(-2, 2, 100)
+X_range = np.linspace(-maxX, maxX, 100)
 Y_pred = np.polyval(theta[::-1], X_range)  # Evaluate the regression polynomial
 
 # Plot the points and the regression line
@@ -86,6 +92,7 @@ plt.plot(X_range, Y_pred, color='red', label='Linear Regression')
 plt.xlabel('X')
 plt.ylabel('Y')
 plt.legend()
-plt.title('Linear Regression using SGD with Adam')
+plt.title('Linear Regression using SGD with Adam, Deg: ' + str(deg))
 plt.grid(True)
+plt.savefig('metOptLab3TaskBonus' + str(deg)+ '.png')
 plt.show()
