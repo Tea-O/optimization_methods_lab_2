@@ -27,8 +27,9 @@ def SGD_with_adam(X, y, deg, alpha, beta, ll, learning_rate=0.01, n_epochs=1000,
                 gradient[j] += ((sum([w[q] * X[i] ** q for q in range(len(w))]) - y[i])
                                 * (X[i] ** j))
         gradient *= 2 / n_samples
-
         gradient += L1(ll, w) / n_samples
+        # gradient += L2(ll, w) / n_samples
+        # gradient += elastic(ll,ll, w) / n_samples
         return gradient
 
     for epoch in range(1, n_epochs + 1):
